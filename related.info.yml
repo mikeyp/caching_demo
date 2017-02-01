@@ -1,0 +1,5 @@
+name: Related
+type: module
+description: Shows related items.
+core: 8.x
+package: Custom

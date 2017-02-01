@@ -1,0 +1,18 @@
+<?php
+
+/**
+ * @file
+ * Related module provides features to display related content on a page.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function related_theme() {
+  return [
+    'related_items_block' => [
+      'template' => 'related',
+      'variables' => ['items' => []]
+    ],
+  ];
+}
