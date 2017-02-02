@@ -86,6 +86,7 @@ class RelatedItems extends BlockBase implements ContainerFactoryPluginInterface 
       '#cache' => [
         'max-age' => Cache::PERMANENT,
         'contexts' => ['url.path'],
+        'tags' => ['node_list'],
       ],
     ];
 
