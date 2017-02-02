@@ -98,6 +98,10 @@ class RelatedItems extends BlockBase implements ContainerFactoryPluginInterface 
 
       $nodes = Node::loadMultiple($nids);
       $build['#items'] = $nodes;
+
+      foreach ($nodes as $node) {
+        $this->renderer->addCacheableDependency($build, $node);
+      }
     }
 
     return $build;
