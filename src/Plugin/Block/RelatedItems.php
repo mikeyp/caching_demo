@@ -3,6 +3,7 @@
 namespace Drupal\related\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -82,6 +83,10 @@ class RelatedItems extends BlockBase implements ContainerFactoryPluginInterface 
   public function build() {
     $build = [
       '#theme' => 'related_items_block',
+      '#cache' => [
+        'max-age' => Cache::PERMANENT,
+        'contexts' => ['url.path'],
+      ],
     ];
 
     if ($node = $this->routeMatch->getParameter('node')) {
@@ -93,7 +98,6 @@ class RelatedItems extends BlockBase implements ContainerFactoryPluginInterface 
 
       $nodes = Node::loadMultiple($nids);
       $build['#items'] = $nodes;
-
     }
 
     return $build;
