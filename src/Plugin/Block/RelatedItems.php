@@ -75,6 +75,7 @@ class RelatedItems extends BlockBase implements ContainerFactoryPluginInterface 
 
     $cachableMetadata = new CacheableMetadata();
     $cachableMetadata->setCacheContexts(['url.path']);
+    $cachableMetadata->setCacheTags(['node_list']);
 
     if ($current_node = $this->routeMatch->getParameter('node')) {
       $query = $this->entityQuery->get('node');
