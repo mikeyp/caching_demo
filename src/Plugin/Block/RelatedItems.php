@@ -3,6 +3,7 @@
 namespace Drupal\related\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\node\Entity\Node;
@@ -72,6 +73,9 @@ class RelatedItems extends BlockBase implements ContainerFactoryPluginInterface 
   public function build() {
     $build = [];
 
+    $cachableMetadata = new CacheableMetadata();
+    $cachableMetadata->setCacheContexts(['url.path']);
+
     if ($current_node = $this->routeMatch->getParameter('node')) {
       $query = $this->entityQuery->get('node');
       $nids = $query->condition('field_universe.target_id', $current_node->field_universe->target_id)
@@ -86,6 +90,7 @@ class RelatedItems extends BlockBase implements ContainerFactoryPluginInterface 
       ];
     }
 
+    $cachableMetadata->applyTo($build);
     return $build;
   }
 
