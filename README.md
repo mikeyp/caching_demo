@@ -31,6 +31,6 @@ Adding the cache tag for the current node seems to do the trick! Now any change 
 
 But what happens when a new item is added? How do we ensure that the block reflects new items? The block can't be tagged with the cache tag from a node that doesn't exist yet?
 
-### chapter-4
+### chapter-5
 
 Ahh now our block updates whenever the node list is updated! Perfect!

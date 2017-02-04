@@ -3,9 +3,7 @@
 namespace Drupal\related\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
-use Drupal\Core\Cache\Cache;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\node\Entity\Node;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -29,13 +27,6 @@ class RelatedItems extends BlockBase implements ContainerFactoryPluginInterface 
   protected $entityQuery;
 
   /**
-   * The renderer service.
-   *
-   * @var \Drupal\Core\Render\RendererInterface
-   */
-  protected $renderer;
-
-  /**
    * The route match service.
    *
    * @var \Drupal\Core\Routing\RouteMatchInterface
@@ -53,17 +44,15 @@ class RelatedItems extends BlockBase implements ContainerFactoryPluginInterface 
    *   The plugin implementation definition.
    * @param \Drupal\Core\Entity\Query\QueryFactory $entity_query
    *   The entity query factory.
-   * @param \Drupal\Core\Render\RendererInterface $renderer
-   *   The renderer service.
-   * $param \Drupal\Core\Routing\RouteMatchInterface
+   * @param \Drupal\Core\Routing\RouteMatchInterface $routeMatch
    *   The route match service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, QueryFactory $entity_query, RendererInterface $renderer, RouteMatchInterface $routeMatch) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, QueryFactory $entity_query, RouteMatchInterface $routeMatch) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityQuery = $entity_query;
-    $this->renderer = $renderer;
     $this->routeMatch = $routeMatch;
   }
+
   /**
    * {@inheritdoc}
    */
@@ -73,37 +62,28 @@ class RelatedItems extends BlockBase implements ContainerFactoryPluginInterface 
       $plugin_id,
       $plugin_definition,
       $container->get('entity.query'),
-      $container->get('renderer'),
       $container->get('current_route_match')
     );
   }
+
   /**
    * {@inheritdoc}
    */
   public function build() {
-    $build = [
-      '#theme' => 'related_items_block',
-      '#cache' => [
-        'max-age' => Cache::PERMANENT,
-        'contexts' => ['url.path'],
-        'tags' => ['node_list'],
-      ],
-    ];
+    $build = [];
 
-    if ($node = $this->routeMatch->getParameter('node')) {
+    if ($current_node = $this->routeMatch->getParameter('node')) {
       $query = $this->entityQuery->get('node');
-      $nids = $query->condition('field_universe.target_id', $node->field_universe->target_id)
+      $nids = $query->condition('field_universe.target_id', $current_node->field_universe->target_id)
         ->sort('created', 'DESC')
         ->range(0, 4)
         ->execute();
 
-      $nodes = Node::loadMultiple($nids);
-      $build['#items'] = $nodes;
-      $this->renderer->addCacheableDependency($build, $node);
-
-      foreach ($nodes as $node) {
-        $this->renderer->addCacheableDependency($build, $node);
-      }
+      $related_items = Node::loadMultiple($nids);
+      $build = [
+        '#theme' => 'related_items_block',
+        '#items' => $related_items,
+      ];
     }
 
     return $build;
