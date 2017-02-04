@@ -89,6 +89,8 @@ class RelatedItems extends BlockBase implements ContainerFactoryPluginInterface 
         '#items' => $related_items,
       ];
 
+      $cachableMetadata->addCacheableDependency($current_node);
+
       foreach ($related_items as $related_item) {
         $cachableMetadata->addCacheableDependency($related_item);
       }
